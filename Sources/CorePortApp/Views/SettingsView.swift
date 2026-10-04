@@ -1,29 +1,44 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State private var importStatus = "Waiting for Excel upload"
+    @EnvironmentObject var appState: AppState
+    @State private var showingImport = false
+    @State private var showingDataManagement = false
 
     var body: some View {
         NavigationStack {
             List {
-                Section("Data Import") {
-                    NavigationLink(destination: ImportExcelView()) {
-                        Label("Import Excel", systemImage: "square.and.arrow.down")
+                Section("Data Management") {
+                    NavigationLink(destination: DataManagementView()) {
+                        Label("Manage Data", systemImage: "folder.badge.gear")
                     }
 
-                    Text(importStatus)
-                        .foregroundStyle(.secondary)
+                    NavigationLink(destination: ExcelImportView()) {
+                        Label("Import Excel", systemImage: "square.and.arrow.down")
+                    }
+                }
+
+                Section("Utilities") {
+                    NavigationLink(destination: StandardTimesView()) {
+                        Label("Standard Times", systemImage: "hourglass")
+                    }
+
+                    NavigationLink(destination: ShiftRotationView()) {
+                        Label("Shift Rotation", systemImage: "calendar")
+                    }
                 }
 
                 Section("System") {
                     LabeledContent("Language", value: "English")
                     LabeledContent("Mode", value: "Offline first")
                     LabeledContent("Storage", value: "Local")
+                    LabeledContent("App Version", value: "1.0.0")
                 }
 
-                Section("Sync") {
+                Section("Preferences") {
                     Toggle("Auto Sync", isOn: .constant(true))
-                    Toggle("Offline Mode", isOn: .constant(true))
+                    Toggle("Dark Mode", isOn: .constant(false))
+                    Toggle("Notifications", isOn: .constant(true))
                 }
             }
             .navigationTitle("Settings")
@@ -31,40 +46,7 @@ struct SettingsView: View {
     }
 }
 
-struct ImportExcelView: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Import Excel Data")
-                .font(.title2)
-                .bold()
-
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Expected Sheets:")
-                    .font(.headline)
-                
-                ForEach(["Operators", "Machines", "StandardTimes", "TestSessions"], id: \.self) { sheet in
-                    Label(sheet, systemImage: "checkmark.circle")
-                        .foregroundStyle(.green)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-
-            Button(action: {}) {
-                Label("Select Excel File", systemImage: "folder")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-
-            Spacer()
-        }
-        .padding()
-        .navigationTitle("Import Excel")
-    }
-}
-
 #Preview {
     SettingsView()
+        .environmentObject(AppState())
 }
